@@ -12,10 +12,12 @@ const defaultOpts = {
 };
 
 export default function singleSpaVue(userOpts) {
+  // userOpts 非对象报错
   if (typeof userOpts !== "object") {
     throw new Error(`single-spa-vue requires a configuration object`);
   }
 
+  // 合并参数
   const opts = {
     ...defaultOpts,
     ...userOpts,
@@ -42,10 +44,10 @@ export default function singleSpaVue(userOpts) {
 
   opts.createApp = opts.createApp || (opts.Vue && opts.Vue.createApp);
 
-  // Just a shared object to store the mounted object state
-  // key - name of single-spa app, since it is unique
+  // 挂在实例 - 只是一个共享对象来存储挂载的对象状态密钥-单个spa应用程序的名称
   let mountedInstances = {};
 
+  // 向外返回一个对象，用于在 Single-spa 中执行钩子函数
   return {
     bootstrap: bootstrap.bind(null, opts, mountedInstances),
     mount: mount.bind(null, opts, mountedInstances),
@@ -54,6 +56,7 @@ export default function singleSpaVue(userOpts) {
   };
 }
 
+// 初始化
 function bootstrap(opts) {
   if (opts.loadRootComponent) {
     return opts.loadRootComponent().then((root) => (opts.rootComponent = root));
@@ -69,6 +72,7 @@ function resolveAppOptions(opts, props) {
   return Promise.resolve({ ...opts.appOptions });
 }
 
+// 挂载
 function mount(opts, mountedInstances, props) {
   const instance = {};
   return Promise.resolve().then(() => {
@@ -174,6 +178,7 @@ function mount(opts, mountedInstances, props) {
   });
 }
 
+// 更新
 function update(opts, mountedInstances, props) {
   return Promise.resolve().then(() => {
     const instance = mountedInstances[props.name];
@@ -188,6 +193,7 @@ function update(opts, mountedInstances, props) {
   });
 }
 
+// 卸载
 function unmount(opts, mountedInstances, props) {
   return Promise.resolve().then(() => {
     const instance = mountedInstances[props.name];
